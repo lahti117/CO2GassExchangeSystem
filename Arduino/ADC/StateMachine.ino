@@ -2,12 +2,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "globals.h"
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
 #define CO2_INPUT_PIN A0
 #define H2O_INPUT_PIN A1
 #define DATA_FORMAT_STRING "CO2: %d, H2O:%d\n"
+#define NUM_RELAYS 8
 
 uint16_t average(uint16_t list[], uint8_t len) {
   uint8_t i;
@@ -46,6 +48,9 @@ uint16_t average(uint16_t list[], uint8_t len) {
   }
 }*/
 
+uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
+                       relay_4, relay_5, relay_6, relay_7 };
+
 // Function for sending data over the SPI connection
 void sendData(uint16_t CO2, uint16_t H2O) {
   char data [25];
@@ -58,8 +63,22 @@ void sendData(uint16_t CO2, uint16_t H2O) {
   }
 }
 
-void updateRelays() {
-  // Function for updating the relays
+void updateRelays(char* relays) {
+  // Format of the string will be 8 1's and 0's saying the state
+  // of each relay
+  uint8_t i;
+  for (i = 0; i < NUM_RELAYS; i++) {
+    if (relays[i] == '1') {
+      digitalWrite(relayPorts[i], HIGH);
+    }
+    else if (relays[i] == '0') {
+      digitalWrite(relayPorts[i], LOW);
+    }
+    else {
+      digitalWrite(relayPorts[i], LOW);
+    }
+  }
+  
 }
 
 enum stateMachine_st_t {
@@ -113,6 +132,13 @@ void stateMachine_tick() {
       else {
         currentState = waitInstructions_st;
       }
+      /* This is the code for decoding the SPI instructions
+      if (process) {
+        process = false; //reset the process
+        // TODO: Parse SPI Input Instructions
+        indx = 0; //reset button to zero
+      }
+      */
       break;
     case readData_st:
       currentState = waitInstructions_st;
@@ -152,7 +178,7 @@ void stateMachine_tick() {
       // I think it would be best to have a binary variable
       // and this just reads the states and writes the pins low or high
       // if they have changed. 
-      updateRelays();
+      // updateRelays();
       break;
     case final_st:
       break;
