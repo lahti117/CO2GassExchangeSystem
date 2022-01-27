@@ -43,6 +43,11 @@ uint16_t average(uint16_t list[], uint8_t len) {
   }
 }*/
 
+// Function for sending data over the SPI connection
+void sendData() {
+
+}
+
 enum stateMachine_st_t {
   init_st,
   waitInstructions_st,
