@@ -1,5 +1,6 @@
 // #include <SPI.h>
 #include <stdint.h>
+#include <string.h>
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
@@ -47,12 +48,27 @@ uint16_t average(uint16_t list[], uint8_t len) {
 // Function for sending data over the SPI connection
 void sendData(uint16_t CO2, uint16_t H2O) {
   char* data;
+  // char c;
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  for (const char * p = data ; *p != '\0'; p++) 
+  char c;
+  int len = strlen(data);
+  uint16_t i;
+  for (i = 0; i < len; i++) {
+    Serial.print("data[i]");
+  }
+  Serial.print('\n');
+  /*for (char * p = data ; c = *p; p++) 
    {
-      // SPI.transfer (c);
+      Serial.print(c);
+   }*/
+
+   /*
+   for (const char * p = "Hello, world!\r" ; c = *p; p++) 
+   {
+      SPI.transfer (c);
       Serial.print(c);
    }
+   */
 }
 
 enum stateMachine_st_t {
@@ -148,6 +164,7 @@ void stateMachine_tick() {
       Serial.print(H2OsensorValue);
       Serial.print(" Average: ");
       Serial.println(average(H2OValues, ARRAY_LEN));
+      // sendData(average(CO2Values, ARRAY_LEN), average(H2OValues, ARRAY_LEN));
       break;
     case relays_st:
       // Use this section of state actions to update the relays
