@@ -1,5 +1,6 @@
-// #include <SPI.h>
+#include <SPI.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #define ARRAY_LEN 60
@@ -47,28 +48,18 @@ uint16_t average(uint16_t list[], uint8_t len) {
 
 // Function for sending data over the SPI connection
 void sendData(uint16_t CO2, uint16_t H2O) {
-  char* data;
-  // char c;
+  char data [25];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  char c;
   int len = strlen(data);
   uint16_t i;
   for (i = 0; i < len; i++) {
-    Serial.print("data[i]");
+    Serial.print(data[i]);
+    //SPI.transfer (data[i]);
   }
-  Serial.print('\n');
-  /*for (char * p = data ; c = *p; p++) 
-   {
-      Serial.print(c);
-   }*/
+}
 
-   /*
-   for (const char * p = "Hello, world!\r" ; c = *p; p++) 
-   {
-      SPI.transfer (c);
-      Serial.print(c);
-   }
-   */
+void updateRelays() {
+  // Function for updating the relays
 }
 
 enum stateMachine_st_t {
@@ -152,25 +143,16 @@ void stateMachine_tick() {
       }
       CO2Values[iterator] = CO2sensorValue;
       H2OValues[iterator] = H2OsensorValue;
-      // Serial.print("data logged: ");
-      // Serial.println(CO2sensorValue);
       break;
     case transmitData_st:
-      Serial.print("CO2Value: ");
-      Serial.print(CO2sensorValue);
-      Serial.print(" Average: ");
-      Serial.println(average(CO2Values, ARRAY_LEN));
-      Serial.print("H2OValue: ");
-      Serial.print(H2OsensorValue);
-      Serial.print(" Average: ");
-      Serial.println(average(H2OValues, ARRAY_LEN));
-      // sendData(average(CO2Values, ARRAY_LEN), average(H2OValues, ARRAY_LEN));
+      sendData(average(CO2Values, ARRAY_LEN), average(H2OValues, ARRAY_LEN));
       break;
     case relays_st:
       // Use this section of state actions to update the relays
       // I think it would be best to have a binary variable
       // and this just reads the states and writes the pins low or high
       // if they have changed. 
+      updateRelays();
       break;
     case final_st:
       break;
