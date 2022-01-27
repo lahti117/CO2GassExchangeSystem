@@ -5,7 +5,7 @@
 #define SAMPLE_INTERVAL 20
 #define CO2_INPUT_PIN A0
 #define H2O_INPUT_PIN A1
-#define DATA_FORMAT_STRING "CO2: %d, H2O:%d"
+#define DATA_FORMAT_STRING "CO2: %d, H2O:%d\n"
 
 uint16_t average(uint16_t list[], uint8_t len) {
   uint8_t i;
@@ -48,7 +48,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
 void sendData(uint16_t CO2, uint16_t H2O) {
   char* data;
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  for (const char * p = data ; c = *p; p++) 
+  for (const char * p = data ; *p != '\0'; p++) 
    {
       // SPI.transfer (c);
       Serial.print(c);
