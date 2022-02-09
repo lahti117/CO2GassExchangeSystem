@@ -1,6 +1,6 @@
 import time
 # import RPi.GPIO as GPIO
-
+# This is example code from John Stout in the ECEN department.
 class pumpOperator:
 
 	_is_running = False

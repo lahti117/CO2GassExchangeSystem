@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+# This is example code of another GUI from John Stout in the ECEN department.
 import tkinter as tk
 import threading
 import pumpOperator
