@@ -20,7 +20,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
   return (total / len);
 }
 
-/*void printState() {
+void printState() {
   if (previousState != currentState) {
     previousState = currentState;
     switch (currentState) {
@@ -46,7 +46,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
         break;
     }
   }
-}*/
+}
 
 uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
                        relay_4, relay_5, relay_6, relay_7 };
