@@ -15,4 +15,4 @@ The Relay command is followed by 8 1's and 0's indicating
 which relays you want on or off from 0 to 7.
 
 It is a project run by Dr. Ryan Steward in the Plants and Wildlife Sciences Department
-at Brigham Young University. The main contributer of this code is Samuel Lahti
+at Brigham Young University. The main contributers to this code are Samuel Lahti and Karoline Busche.

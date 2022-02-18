@@ -9,4 +9,4 @@ A document containing the overview of the system can be found [here](https://doc
 a breif introduction to each of the parts to the system.
 ## Contributors
 It is a project run by Dr. Ryan Steward in the Plants and Wildlife Sciences Department
-at Brigham Young University. The main contributer of this code is Samuel Lahti.
+at Brigham Young University. The main contributers to this code are Samuel Lahti and Karoline Busche.

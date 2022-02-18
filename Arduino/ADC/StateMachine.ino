@@ -48,7 +48,7 @@ void printState() {
   }
 }
 
-uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
+const uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
                        relay_4, relay_5, relay_6, relay_7 };
 
 // Function for sending data over the SPI connection
