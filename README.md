@@ -1,4 +1,4 @@
-# CO2GassExchangeSystem
+# CO2GasExchangeSystem
 
 This project includes two main branches:
 
