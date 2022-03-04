@@ -1,14 +1,20 @@
 # This is the code responsible for the GUI window
 # and all the buttons and fields in the GUI
 
-import tkinter as Tk
+import tkinter as tk 
+from tkinter import *
 
-root = Tk()
-
+root = tk.Tk()
 root.title("CO2 H2O Gas Exchange System Datalogger")
+
+e = tk.Entry(root, width=35, borderwidth=5)
+e.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
+
+#e.insert(0,"")
 
 #what happens with on
 def myClickOn():
+    
 	myLabel = Label(root, text="running")
 	myLabel.pack()
 
@@ -19,82 +25,140 @@ def myClickQuit():
 
 #what happens with numbers
 def myClick1():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("2"))
     myLabel = Label(root, text="1")
     myLabel.pack()
 
 def myClick2():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("2"))
     myLabel = Label(root, text="2")
     myLabel.pack()
 
 def myClick3():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("3"))
     myLabel = Label(root, text="3")
     myLabel.pack()
 
 def myClick4():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("4"))
     myLabel = Label(root, text="4")
     myLabel.pack()
 
 def myClick5():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("5"))
     myLabel = Label(root, text="5")
     myLabel.pack()
 
 def myClick6():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("6"))
     myLabel = Label(root, text="6")
     myLabel.pack()
 
 def myClick7():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("7"))
     myLabel = Label(root, text="7")
     myLabel.pack()
 
 def myClick8():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("8"))
     myLabel = Label(root, text="8")
     myLabel.pack()
 
 def myClick9():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("9"))
     myLabel = Label(root, text="9")
     myLabel.pack()
 
 def myClick0():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("0"))
     myLabel = Label(root, text="0")
     myLabel.pack()
 
 def myClickDot():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("."))
     myLabel = Label(root, text=".")
     myLabel.pack()
 
 def myClickDash():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("-"))
     myLabel = Label(root, text="-")
     myLabel.pack()
 
 def myClickRef():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("Ref/Cal"))
     myLabel = Label(root, text="Ref/Cal")
     myLabel.pack()
 
 def myClickDisplay():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("Display"))
     myLabel = Label(root, text="Display")
     myLabel.pack()
 
 def myClickSys():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("System"))
     myLabel = Label(root, text="System")
     myLabel.pack()
 
 def myClickDta():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("Data I/O"))
     myLabel = Label(root, text="Data I/O")
     myLabel.pack()
 
 def myClickAn():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("Analysis"))
     myLabel = Label(root, text="Analysis")
     myLabel.pack()
 
 def myClickPump():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("Pump"))
     myLabel = Label(root, text="Pump")
     myLabel.pack()
 
 def myClickBack():
+    e.delete(0, END)
     myLabel = Label(root, text="<-")
     myLabel.pack()
 
 def myClickEEX():
+    current = e.get()
+    e.delete(0, END)
+    e.insert(0, str(current) + str("EEX"))
     myLabel = Label(root, text="EEX")
     myLabel.pack()
 
