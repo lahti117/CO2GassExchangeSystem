@@ -16,3 +16,7 @@ which relays you want on or off from 0 to 7.
 
 It is a project run by Dr. Ryan Steward in the Plants and Wildlife Sciences Department
 at Brigham Young University. The main contributers to this code are Samuel Lahti and Karoline Busche.
+
+4105 Life Sciences Building
+Brigham Young University 
+Provo, UT 84602
