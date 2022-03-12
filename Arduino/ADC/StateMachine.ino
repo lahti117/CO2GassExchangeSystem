@@ -6,9 +6,9 @@
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
-#define CO2_INPUT_PIN A0
-#define H2O_INPUT_PIN A1
-#define DATA_FORMAT_STRING "CO2: %d, H2O:%d\n"
+#define CO2_A_INPUT_PIN A0
+#define C02_B_INPUT_PIN A1
+#define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
 #define NUM_RELAYS 8
 
 uint16_t average(uint16_t list[], uint8_t len) {
@@ -48,12 +48,12 @@ uint16_t average(uint16_t list[], uint8_t len) {
   }
 }*/
 
-uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
+const uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
                        relay_4, relay_5, relay_6, relay_7 };
 
 // Function for sending data over the SPI connection
 void sendData(uint16_t CO2, uint16_t H2O) {
-  char data [25];
+  char data [30];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
   int len = strlen(data);
   uint16_t i;
@@ -161,8 +161,8 @@ void stateMachine_tick() {
     case waitInstructions_st:
       break;
     case readData_st:
-      CO2sensorValue = analogRead(CO2_INPUT_PIN);
-      H2OsensorValue = analogRead(H2O_INPUT_PIN);
+      CO2sensorValue = analogRead(CO2_A_INPUT_PIN);
+      H2OsensorValue = analogRead(C02_B_INPUT_PIN);
       iterator++;
       if (iterator >= ARRAY_LEN) {
         iterator = 0;
