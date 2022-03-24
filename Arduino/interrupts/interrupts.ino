@@ -1,6 +1,6 @@
 #include <stdint.h>
 unsigned int reload = 0xF424; 
-
+// https://microcontrollerslab.com/arduino-timer-interrupts-tutorial/
 ISR(TIMER1_COMPA_vect){
   
 }
