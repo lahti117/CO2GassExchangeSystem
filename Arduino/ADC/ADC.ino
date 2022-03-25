@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <SPI.h>
 #include "globals.h"
+#include "globals.c"
 
 #define SM_PERIOD 50
 #define ROLLOVER_VALUE 0xc35
@@ -27,8 +28,6 @@ void setupRelays() {
 void setupSPI() {
   pinMode(MISO, OUTPUT); // have to send on master in so it set as output
   SPCR |= _BV(SPE); // turn on SPI in slave mode
-  indx = 0; // buffer empty
-  process = false;
   SPI.attachInterrupt(); // turn on interrupt
 }
 
@@ -42,32 +41,29 @@ void setupInterrupts() {
 }
 
 ISR (SPI_STC_vect) {  // SPI interrupt routine 
-   byte c = SPDR; // read byte from SPI Data Register
-   if (indx < sizeof buff) {
-      buff [indx++] = c; // save data in the next index in the array buff
-      if (c == '\0') //check for the end of the word
-      process = true;
-   }
+  byte c = SPDR; // read byte from SPI Data Register
+  if (globals_bufferElementCount() < GLOBALS_DATA_BUFFER_SIZE) {
+    global_addDataToBuffer(c); // save data in the next index in the array buff
+    if (c == '\0') //check for the end of the word
+      globals_setProcessFlag(true);
+  }
 }
 
-ISR(TIMER1_COMPA_vect){
+ISR (TIMER1_COMPA_vect){
   stateMachine_tick();
 }
 
 void setup() {
-  // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
   stateMachine_Init();
+  setupRelays();
+  globals_initGlobals();
   setupSPI();
   setupInterrupts();
-  setupRelays();
 }
 
 void loop() {
-  /*currentMillis = millis();
-  if ((currentMillis - previousMillis) >= SM_PERIOD) {
-    previousMillis = currentMillis;
-    stateMachine_tick();
-  }*/
+  // Everything is handled in the interrupt
+  // routines so this is just waiting
   while(1);
 }

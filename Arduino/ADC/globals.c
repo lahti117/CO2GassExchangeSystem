@@ -3,31 +3,36 @@
 // to pass data to the State Machine
 #include "globals.h"
 
-#define DATA_BUFFER_SIZE 100000
+#define DATA_BUFFER_SIZE GLOBALS_DATA_BUFFER_SIZE
 #define DATA_BUFFER_DATA_SIZE DATA_BUFFER_SIZE + 1
 
 // This implements a dedicated circular buffer for storing values
 // from the ADC until they are read and processed by detector().
 // adcBuffer_t is similar to a queue.
 typedef struct {
-  uint32_t indexIn;      // New values go here.
-  uint32_t indexOut;     // Pull old values from here.
-  uint32_t elementCount; // Number of elements in the buffer.
-  uint32_t bufferLength;
-  uint32_t data[DATA_BUFFER_DATA_SIZE]; // Values are stored here.
+  uint16_t indexIn;      // New values go here.
+  uint16_t indexOut;     // Pull old values from here.
+  uint16_t elementCount; // Number of elements in the buffer.
+  uint16_t bufferLength;
+  uint8_t data[DATA_BUFFER_DATA_SIZE]; // Values are stored here.
 } dataBuffer_t;
 
 volatile static dataBuffer_t dataBuffer;
 
 // Initialize the adc buffer
 void dataBufferInit() {
-  uint32_t i;
+  uint16_t i;
   dataBuffer.indexIn = dataBuffer.indexOut = 0;
   dataBuffer.bufferLength = DATA_BUFFER_DATA_SIZE;
 }
 
+void globals_initGlobals() {
+    dataBufferInit();
+    process = false;
+}
+
 // Increment the index in and check for wrap around.
-uint32_t inc_indexIn() {
+uint16_t inc_indexIn() {
   dataBuffer.indexIn++;
   // Checks the if the IndexIn has maxed out of the array and if it needs to
   // wrap around to index 0.
@@ -38,7 +43,7 @@ uint32_t inc_indexIn() {
 }
 
 // Increment the index out and check for wrap around.
-uint32_t inc_indexOut() {
+uint16_t inc_indexOut() {
   dataBuffer.indexOut++;
   // Checks if IndexOut has reached the max buffer size and if it needs to wrap
   // back to index 0.
@@ -50,34 +55,37 @@ uint32_t inc_indexOut() {
 
 // This adds data to the ADC queue. Data are removed from this queue and used by
 // the detector.
-void isr_addDataToAdcBuffer(uint32_t adcData) {
-  adcBuffer.data[adcBuffer.indexIn] = adcData;
-  adcBuffer.elementCount++;
+void global_addDataToBuffer(uint8_t data) {
+  dataBuffer.data[dataBuffer.indexIn] = data;
+  dataBuffer.elementCount++;
   inc_indexIn();
   // Make sure that the arrays aren't empty.
-  if (adcBuffer.elementCount != 0) {
+  if (dataBuffer.elementCount != 0) {
     // See if the indexes are at the same place. If they are, move the Index out
     // up.
-    if (adcBuffer.indexIn == adcBuffer.indexOut) {
+    if (dataBuffer.indexIn == dataBuffer.indexOut) {
       inc_indexOut();
-      adcBuffer.elementCount--;
+      dataBuffer.elementCount--;
     }
   }
 }
-/*
+
 // This removes a value from the ADC buffer.
-uint32_t isr_removeDataFromAdcBuffer() {
+uint8_t globals_removeDataFromBuffer() {
   // Checks if there are elements in the queue.
-  if (adcBuffer.elementCount == 0) {
+  if (dataBuffer.elementCount == 0) {
     return 0;
   } else {
-    uint32_t returnData = adcBuffer.data[adcBuffer.indexOut];
-    adcBuffer.elementCount--;
+    uint16_t returnData = dataBuffer.data[dataBuffer.indexOut];
+    dataBuffer.elementCount--;
     inc_indexOut();
     return returnData;
   }
 }
 
 // This returns the number of values in the ADC buffer.
-uint32_t isr_adcBufferElementCount() { return adcBuffer.elementCount; }
-*/
+uint16_t globals_bufferElementCount() { return dataBuffer.elementCount; }
+
+bool globals_getProcessFlag() { return process; }
+
+void globals_setProcessFlag(bool state) { process = state; }
