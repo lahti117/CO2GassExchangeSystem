@@ -9,6 +9,7 @@
 // #define SPI 1  // Communicate over SPI
 #define SERIAL 1  // Communicate over serial
 // #define RELAYS 1  // Should run with relay updates
+// #define SDCARD 1
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
@@ -52,6 +53,10 @@ void printState() {
 }
 #endif
 
+#ifdef SDCARD
+// Variables needed to write to SD Card
+#endif
+
 enum stateMachine_st_t {
   init_st,
   waitInstructions_st,
@@ -83,6 +88,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
 
 // Function for sending data over the SPI connection
 void sendData(uint16_t CO2, uint16_t H2O) {
+  #ifndef SDCARD
   char data [SEND_DATA_BUFFER_SIZE];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
   int len = strlen(data);
@@ -95,6 +101,10 @@ void sendData(uint16_t CO2, uint16_t H2O) {
     SPI.transfer (data[i]);
     #endif
   }
+  #endif
+  #ifdef SDCARD
+  // Write to SD card instead of sending data
+  #endif
 }
 
 // Function that reads the data and logs it in a table
