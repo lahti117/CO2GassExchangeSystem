@@ -12,7 +12,7 @@ ISR(TIMER1_COMPA_vect){
     digitalWrite(LEDPIN, HIGH);
   }
   output = !output;
-  Serial.println(output);
+  //Serial.println(output);
 }
 
 void setup() {
@@ -29,5 +29,7 @@ void setup() {
 }
 
 void loop() {
-    while(1);
+    while(1) {
+      Serial.println(output);
+    }
 }
