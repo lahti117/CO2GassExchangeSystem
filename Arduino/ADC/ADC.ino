@@ -8,6 +8,7 @@
 #include "globals.h"
 
 #define SM_PERIOD 50
+#define ROLLOVER_VALUE 0xc35
 
 uint32_t previousMillis = 0;
 uint32_t currentMillis = 0;
@@ -31,6 +32,15 @@ void setupSPI() {
   SPI.attachInterrupt(); // turn on interrupt
 }
 
+void setupInterrupts() {
+  TCCR1A = 0;
+  TCCR1B = 0; 
+  OCR1A = ROLLOVER_VALUE;
+  TCCR1B = (1<<WGM12) | (1<<CS12); 
+  TIMSK1 = (1<<OCIE1A);
+  Serial.println("TIMER1 Setup Finished.");
+}
+
 ISR (SPI_STC_vect) {  // SPI interrupt routine 
    byte c = SPDR; // read byte from SPI Data Register
    if (indx < sizeof buff) {
@@ -40,18 +50,24 @@ ISR (SPI_STC_vect) {  // SPI interrupt routine
    }
 }
 
+ISR(TIMER1_COMPA_vect){
+  stateMachine_tick();
+}
+
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
   stateMachine_Init();
   setupSPI();
+  setupInterrupts();
   setupRelays();
 }
 
 void loop() {
-  currentMillis = millis();
+  /*currentMillis = millis();
   if ((currentMillis - previousMillis) >= SM_PERIOD) {
     previousMillis = currentMillis;
     stateMachine_tick();
-  }
+  }*/
+  while(1);
 }

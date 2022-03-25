@@ -4,12 +4,29 @@
 #include <string.h>
 #include "globals.h"
 
+//#define DEBUG 1
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
 #define CO2_A_INPUT_PIN A0
 #define C02_B_INPUT_PIN A1
 #define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
 #define NUM_RELAYS 8
+
+enum stateMachine_st_t {
+  init_st,
+  waitInstructions_st,
+  readData_st,
+  transmitData_st,
+  relays_st,
+  final_st
+};
+
+static enum stateMachine_st_t currentState, previousState;
+static uint16_t CO2sensorValue, H2OsensorValue;
+static uint16_t CO2Values[ARRAY_LEN];
+static uint16_t H2OValues[ARRAY_LEN];
+static uint8_t iterator;
+static uint16_t counter;
 
 uint16_t average(uint16_t list[], uint8_t len) {
   uint8_t i;
@@ -20,7 +37,8 @@ uint16_t average(uint16_t list[], uint8_t len) {
   return (total / len);
 }
 
-/*void printState() {
+#ifdef DEBUG
+void printState() {
   if (previousState != currentState) {
     previousState = currentState;
     switch (currentState) {
@@ -46,14 +64,24 @@ uint16_t average(uint16_t list[], uint8_t len) {
         break;
     }
   }
-}*/
+}
+#endif
 
-const uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
-                       relay_4, relay_5, relay_6, relay_7 };
+const uint8_t relayPorts[] = {relay_0, relay_1, renum stateMachine_st_t {
+  init_st,
+  waitInstructions_st,
+  readData_st,
+  transmitData_st,
+  relays_st,
+  final_st
+};
 
-// Function for sending data over the SPI connection
-void sendData(uint16_t CO2, uint16_t H2O) {
-  char data [30];
+static enum stateMachine_st_t currentState, previousState;
+static uint16_t CO2sensorValue, H2OsensorValue;
+static uint16_t CO2Values[ARRAY_LEN];
+static uint16_t H2OValues[ARRAY_LEN];
+static uint8_t iterator;
+static uint16_t counter;
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
   int len = strlen(data);
   uint16_t i;
@@ -81,21 +109,7 @@ void updateRelays(char* relays) {
   
 }
 
-enum stateMachine_st_t {
-  init_st,
-  waitInstructions_st,
-  readData_st,
-  transmitData_st,
-  relays_st,
-  final_st
-};
 
-static enum stateMachine_st_t currentState, previousState;
-static uint16_t CO2sensorValue, H2OsensorValue;
-static uint16_t CO2Values[ARRAY_LEN];
-static uint16_t H2OValues[ARRAY_LEN];
-static uint8_t iterator;
-static uint16_t counter;
 
 void stateMachine_Init() {
   currentState = previousState = init_st;
@@ -110,7 +124,9 @@ void stateMachine_Init() {
 
 void stateMachine_tick() {
   // State transitions
-  // printState();
+  #ifdef DEBUG
+  printState();
+  #endif
   counter++;
   switch (currentState) {
     case init_st:
