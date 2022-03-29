@@ -6,7 +6,7 @@
 
 // Uncomment these lines to compile with the given options
 // #define DEBUG 1  // Debug printout
-// #define SPI 1  // Communicate over SPI
+// #define SPI_TO_PI 1  // Communicate over SPI
 #define SERIAL 1  // Communicate over serial
 // #define RELAYS 1  // Should run with relay updates
 // #define SDCARD 1
@@ -97,7 +97,7 @@ void sendData(uint16_t CO2, uint16_t H2O) {
     #ifdef SERIAL
     Serial.print(data[i]);
     #endif
-    #ifdef SPI
+    #ifdef SPI_TO_PI
     SPI.transfer (data[i]);
     #endif
   }
@@ -178,7 +178,7 @@ void stateMachine_tick() {
         currentState = waitInstructions_st;
       }
       #endif
-      #ifdef SPI
+      #ifdef SPI_TO_PI
       if (globals_getProcessFlag()) {
         char SPIMSG[GLOBALS_DATA_BUFFER_SIZE];
         uint8_t elementCount = globals_bufferElementCount();
