@@ -5,11 +5,6 @@
 #include "globals.h"
 
 // Uncomment these lines to compile with the given options
-// #define DEBUG 1  // Debug printout
-// #define SPI_TO_PI 1  // Communicate over SPI
-#define SERIAL 1  // Communicate over serial
-// #define RELAYS 1  // Should run with relay updates
-// #define SDCARD 1
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
@@ -103,7 +98,9 @@ void sendData(uint16_t CO2, uint16_t H2O) {
   }
   #endif
   #ifdef SDCARD
-  // Write to SD card instead of sending data
+  char data [SEND_DATA_BUFFER_SIZE];
+  sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
+  dataFile.println(data);
   #endif
 }
 
@@ -178,7 +175,7 @@ void stateMachine_tick() {
         currentState = waitInstructions_st;
       }
       #endif
-      #ifdef SPI_TO_PI
+      /*#ifdef SPI_TO_PI
       if (globals_getProcessFlag()) {
         char SPIMSG[GLOBALS_DATA_BUFFER_SIZE];
         uint8_t elementCount = globals_bufferElementCount();
@@ -201,7 +198,7 @@ void stateMachine_tick() {
       else {
         currentState = waitInstructions_st;
       }
-      #endif
+      #endif*/
       break;
 
     case readData_st:

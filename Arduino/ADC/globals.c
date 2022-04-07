@@ -6,6 +6,8 @@
 #define DATA_BUFFER_SIZE GLOBALS_DATA_BUFFER_SIZE
 #define DATA_BUFFER_DATA_SIZE DATA_BUFFER_SIZE + 1
 
+
+
 // This implements a dedicated circular buffer for storing values
 // from the ADC until they are read and processed by detector().
 // adcBuffer_t is similar to a queue.

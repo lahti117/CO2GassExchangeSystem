@@ -6,6 +6,15 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+// #define DEBUG 1  // Debug printout
+// #define SPI_TO_PI 1  // Communicate over SPI
+#define SERIAL 1  // Communicate over serial
+// #define RELAYS 1  // Should run with relay updates
+// #define SDCARD 1 // Save data to SD card module 
+                    // instead of sending to pi
+
+
+
 #define GLOBALS_DATA_BUFFER_SIZE 60
 
 // This is the current index in the character buffer
