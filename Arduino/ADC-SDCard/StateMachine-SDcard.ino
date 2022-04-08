@@ -1,10 +1,5 @@
-#include <SPI.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include "globals-SDcard.h"
-
-// Uncomment these lines to compile with the given options
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
@@ -48,10 +43,6 @@ void printState() {
 }
 #endif
 
-#ifdef SDCARD
-// Variables needed to write to SD Card
-#endif
-
 enum stateMachine_st_t {
   init_st,
   waitInstructions_st,
@@ -66,10 +57,9 @@ static uint16_t CO2ASensorValue, CO2BSensorValue;
 static uint16_t CO2AValues[ARRAY_LEN];
 static uint16_t CO2BValues[ARRAY_LEN];
 static uint8_t iterator;
-static uint16_t counter;
+static uint8_t counter;
 
-const uint8_t relayPorts[] = {relay_0, relay_1, relay_2, relay_3,
-                       relay_4, relay_5, relay_6, relay_7 };
+//File dataFile;
 
 // Function that computes the average if the given array
 uint16_t average(uint16_t list[], uint8_t len) {
@@ -81,27 +71,12 @@ uint16_t average(uint16_t list[], uint8_t len) {
   return (total / len);
 }
 
-// Function for sending data over the SPI connection
+// Function for sending data over the SD connection
 void sendData(uint16_t CO2, uint16_t H2O) {
-  #ifndef SDCARD
   char data [SEND_DATA_BUFFER_SIZE];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  int len = strlen(data);
-  uint16_t i;
-  for (i = 0; i < len; i++) {
-    #ifdef SERIAL
-    Serial.print(data[i]);
-    #endif
-    #ifdef SPI_TO_PI
-    SPI.transfer (data[i]);
-    #endif
-  }
-  #endif
-  #ifdef SDCARD
-  char data [SEND_DATA_BUFFER_SIZE];
-  sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  dataFile.println(data);
-  #endif
+  //dataFile.println(data);
+  Serial.println(data);
 }
 
 // Function that reads the data and logs it in a table
@@ -116,24 +91,15 @@ void readData() {
   CO2BValues[iterator] = CO2BSensorValue;
 }
 
-#ifdef RELAYS
-void updateRelays(char* relays) {
-  // Format of the string will be 8 1's and 0's saying the state
-  // of each relay
-  uint8_t i;
-  for (i = 0; i < NUM_RELAYS; i++) {
-    if (relays[i] == '1') {
-      digitalWrite(relayPorts[i], HIGH);
-    }
-    else if (relays[i] == '0') {
-      digitalWrite(relayPorts[i], LOW);
-    }
-    else {
-      digitalWrite(relayPorts[i], LOW);
-    }
+/*void setupSDCard () {
+  if (!SD.begin(10)) {
+    Serial.println("SD Card initialization failed!");
   }
-}
-#endif
+  else {
+    Serial.println("SD Card initialization Success!");
+    //dataFile = SD.open("data.txt", FILE_WRITE);
+  }
+}*/
 
 void stateMachine_Init() {
   currentState = previousState = init_st;
@@ -144,6 +110,7 @@ void stateMachine_Init() {
     CO2BValues[i] = 0;
   }
   counter = 0;
+  //setupSDCard ();
 }
 
 void stateMachine_tick() {
@@ -158,7 +125,6 @@ void stateMachine_tick() {
       break;
 
     case waitInstructions_st:
-      #ifdef SERIAL
       if (Serial.available() > 0) {
         if(Serial.read() == SEND_DATA_MSG) {
           currentState = transmitData_st;
@@ -174,31 +140,6 @@ void stateMachine_tick() {
       else {
         currentState = waitInstructions_st;
       }
-      #endif
-      /*#ifdef SPI_TO_PI
-      if (globals_getProcessFlag()) {
-        char SPIMSG[GLOBALS_DATA_BUFFER_SIZE];
-        uint8_t elementCount = globals_bufferElementCount();
-        for (uint8_t i = 0; i < elementCount; i++) {
-          SPIMSG[i] = globals_removeDataFromBuffer();
-        }
-
-        if(SPIMSG[0] == SEND_DATA_MSG) {
-          currentState = transmitData_st;
-        }
-        if(SPIMSG[0] == UPDATE_RELAYS_MSG) {
-          currentState = relays_st;
-        }
-        globals_setProcessFlag(false);
-      }
-      else if (counter >= SAMPLE_INTERVAL) {
-        currentState = readData_st;
-        counter = 0;
-      }
-      else {
-        currentState = waitInstructions_st;
-      }
-      #endif*/
       break;
 
     case readData_st:
@@ -236,9 +177,6 @@ void stateMachine_tick() {
       break;
 
     case relays_st:
-      #ifdef RELAYS
-      updateRelays();
-      #endif
       break;
 
     case final_st:
