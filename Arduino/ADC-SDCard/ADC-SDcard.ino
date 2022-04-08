@@ -4,8 +4,8 @@
 // and do the appropriate action.
 
 #include <stdint.h>
-//#include <SPI.h>
-// #include <SD.h>
+#include <SPI.h>
+#include <SD.h>
 
 #define SM_PERIOD 50
 #define ROLLOVER_VALUE 0xc35

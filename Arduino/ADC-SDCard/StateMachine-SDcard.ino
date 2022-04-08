@@ -59,7 +59,7 @@ static uint16_t CO2BValues[ARRAY_LEN];
 static uint8_t iterator;
 static uint8_t counter;
 
-//File dataFile;
+File dataFile;
 
 // Function that computes the average if the given array
 uint16_t average(uint16_t list[], uint8_t len) {
@@ -91,15 +91,15 @@ void readData() {
   CO2BValues[iterator] = CO2BSensorValue;
 }
 
-/*void setupSDCard () {
+void setupSDCard () {
   if (!SD.begin(10)) {
     Serial.println("SD Card initialization failed!");
   }
   else {
     Serial.println("SD Card initialization Success!");
-    //dataFile = SD.open("data.txt", FILE_WRITE);
+    dataFile = SD.open("data.txt", FILE_WRITE);
   }
-}*/
+}
 
 void stateMachine_Init() {
   currentState = previousState = init_st;
@@ -110,7 +110,7 @@ void stateMachine_Init() {
     CO2BValues[i] = 0;
   }
   counter = 0;
-  //setupSDCard ();
+  setupSDCard ();
 }
 
 void stateMachine_tick() {
