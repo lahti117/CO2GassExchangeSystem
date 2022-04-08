@@ -6,12 +6,8 @@
 #include <stdint.h>
 #include "globals.h"
 #include "globals.c"
-#ifdef SPI_TO_PI
-// #include <SPI.h>
-#endif
-#ifdef SDCARD
+//#include <SPI.h>
 // #include <SD.h>
-#endif
 
 // #ifdef SDCARD
 // File dataFile;
