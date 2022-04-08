@@ -76,7 +76,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
 void sendData(uint16_t CO2, uint16_t H2O) {
   char data [SEND_DATA_BUFFER_SIZE];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  //dataFile.println(data);
+  dataFile.println(data);
   Serial.println(data);
 }
 
