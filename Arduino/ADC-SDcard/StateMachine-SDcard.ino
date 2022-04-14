@@ -14,6 +14,8 @@
 #define SEND_DATA_MSG '1'
 #define UPDATE_RELAYS_MSG '2'
 
+#define FILE_NAME "data.csv"
+
 #ifdef DEBUG
 void printState() {
   if (previousState != currentState) {
@@ -80,7 +82,7 @@ void sendData(uint16_t CO2, uint16_t H2O) {
   int len = strlen(data);
   uint16_t i;
   File dataFile;
-  dataFile = SD.open("data.txt", FILE_WRITE);
+  dataFile = SD.open(FILE_NAME, FILE_WRITE);
   for (i = 0; i < len; i++) {
     dataFile.print(data[i]);
     Serial.print(data[i]);
@@ -106,6 +108,16 @@ void setupSDCard () {
   }
   else {
     Serial.println("SD Card initialization Success!");
+    // Test this code here for writing column names
+    char titleString[30];
+    sprintf(titleString, "%s", "CO2 Cell A, CO2 Cell B\n");
+    uint8_t len = strlen(titleString);
+    File dataFile;
+    dataFile = SD.open(FILE_NAME, FILE_WRITE);
+    for (uint8_t i = 0; i < len; i++) {
+      dataFile.print(titleString[i]);
+    }
+    dataFile.close();
   }
 }
 
