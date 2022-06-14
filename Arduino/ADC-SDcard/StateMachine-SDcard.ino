@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
@@ -12,6 +13,8 @@
 
 #define SEND_DATA_MSG '1'
 #define UPDATE_RELAYS_MSG '2'
+
+#define FILE_NAME "data.csv"
 
 #ifdef DEBUG
 void printState() {
@@ -58,8 +61,9 @@ static uint16_t CO2AValues[ARRAY_LEN];
 static uint16_t CO2BValues[ARRAY_LEN];
 static uint8_t iterator;
 static uint8_t counter;
+static uint16_t minuteCounter;
 
-File dataFile;
+//File dataFile;
 
 // Function that computes the average if the given array
 uint16_t average(uint16_t list[], uint8_t len) {
@@ -75,8 +79,15 @@ uint16_t average(uint16_t list[], uint8_t len) {
 void sendData(uint16_t CO2, uint16_t H2O) {
   char data [SEND_DATA_BUFFER_SIZE];
   sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
-  //dataFile.println(data);
-  Serial.println(data);
+  int len = strlen(data);
+  uint16_t i;
+  File dataFile;
+  dataFile = SD.open(FILE_NAME, FILE_WRITE);
+  for (i = 0; i < len; i++) {
+    dataFile.print(data[i]);
+    Serial.print(data[i]);
+  }
+  dataFile.close();
 }
 
 // Function that reads the data and logs it in a table
@@ -97,7 +108,16 @@ void setupSDCard () {
   }
   else {
     Serial.println("SD Card initialization Success!");
-    dataFile = SD.open("data.txt", FILE_WRITE);
+    // Test this code here for writing column names
+    char titleString[30];
+    sprintf(titleString, "%s", "CO2 Cell A, CO2 Cell B\n");
+    uint8_t len = strlen(titleString);
+    File dataFile;
+    dataFile = SD.open(FILE_NAME, FILE_WRITE);
+    for (uint8_t i = 0; i < len; i++) {
+      dataFile.print(titleString[i]);
+    }
+    dataFile.close();
   }
 }
 
@@ -110,6 +130,7 @@ void stateMachine_Init() {
     CO2BValues[i] = 0;
   }
   counter = 0;
+  minuteCounter = 0;
   setupSDCard ();
 }
 

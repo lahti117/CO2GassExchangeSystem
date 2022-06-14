@@ -79,6 +79,7 @@ ISR (TIMER1_COMPA_vect){
 
 void setup() {
   Serial.begin(9600);
+  analogReference(INTERNAL);
   globals_initGlobals();
   stateMachine_Init();
   #ifdef RELAYS
