@@ -6,7 +6,8 @@
 #define SAMPLE_INTERVAL 20
 #define CO2_A_INPUT_PIN A0
 #define C02_B_INPUT_PIN A1
-#define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
+// #define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
+#define DATA_FORMAT_STRING "%d,%d\n"
 #define NUM_RELAYS 8
 
 #define SEND_DATA_BUFFER_SIZE 30
