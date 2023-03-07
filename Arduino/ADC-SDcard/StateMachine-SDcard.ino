@@ -7,6 +7,7 @@
 #define CO2_A_INPUT_PIN A0
 #define C02_B_INPUT_PIN A1
 // #define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
+#define COLUMN_DATA_TITLES "CO2 Cell A, CO2 Cell B\n"
 #define DATA_FORMAT_STRING "%d,%d\n"
 #define NUM_RELAYS 8
 
@@ -111,7 +112,7 @@ void setupSDCard () {
     Serial.println("SD Card initialization Success!");
     // Test this code here for writing column names
     char titleString[30];
-    sprintf(titleString, "%s", "CO2 Cell A, CO2 Cell B\n");
+    sprintf(titleString, "%s", COLUMN_DATA_TITLES);
     uint8_t len = strlen(titleString);
     File dataFile;
     dataFile = SD.open(FILE_NAME, FILE_WRITE);
