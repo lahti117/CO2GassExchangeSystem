@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
+// #define DEBUG
+
 #define ARRAY_LEN 60
 #define SAMPLE_INTERVAL 20
+#define LOG_DATA_INTERVAL 60
 #define CO2_A_INPUT_PIN A0
 #define C02_B_INPUT_PIN A1
 
@@ -18,8 +21,29 @@
 #define UPDATE_RELAYS_MSG '2'
 
 #define FILE_NAME "data.csv"
-#define CHIP_SELECT_PIN 10
-#define FILE_NAME_SIZE 10
+#define CHIP_SELECT_PIN 4
+#define FILE_NAME_SIZE 12
+
+enum stateMachine_st_t {
+  init_st,
+  waitInstructions_st,
+  readData_st,
+  transmitData_st,
+  relays_st,
+  final_st
+};
+
+static enum stateMachine_st_t currentState, previousState;
+static uint16_t CO2ASensorValue, CO2BSensorValue;
+static uint16_t CO2AValues[ARRAY_LEN];
+static uint16_t CO2BValues[ARRAY_LEN];
+static uint8_t iterator;
+static uint8_t counter;
+static uint8_t logDataCounter;
+static uint16_t minuteCounter;
+char fileName [FILE_NAME_SIZE]; //Use this file name later for dynamic naming
+
+//File dataFile;
 
 #ifdef DEBUG
 void printState() {
@@ -50,26 +74,6 @@ void printState() {
   }
 }
 #endif
-
-enum stateMachine_st_t {
-  init_st,
-  waitInstructions_st,
-  readData_st,
-  transmitData_st,
-  relays_st,
-  final_st
-};
-
-static enum stateMachine_st_t currentState, previousState;
-static uint16_t CO2ASensorValue, CO2BSensorValue;
-static uint16_t CO2AValues[ARRAY_LEN];
-static uint16_t CO2BValues[ARRAY_LEN];
-static uint8_t iterator;
-static uint8_t counter;
-static uint16_t minuteCounter;
-// char fileName [FILE_NAME_SIZE]; Use this file name later for dynamic naming
-
-//File dataFile;
 
 // Function that computes the average if the given array
 uint16_t average(uint16_t list[], uint8_t len) {
@@ -114,7 +118,15 @@ void setupSDCard () {
   }
   else {
     Serial.println("SD Card initialization Success!");
-    // Test this code here for writing column names
+    if (SD.exists(FILE_NAME)){
+      Serial.println("data.csv exists.");
+      Serial.println("removing data.csv and creating new one");
+      SD.remove(FILE_NAME);
+    }
+    else {
+      Serial.println("data.csv doesn't exist.");
+      Serial.println("creating data.csv");
+    }
     char titleString[30];
     sprintf(titleString, "%s", COLUMN_DATA_TITLES);
     uint8_t len = strlen(titleString);
@@ -136,6 +148,7 @@ void stateMachine_Init() {
     CO2BValues[i] = 0;
   }
   counter = 0;
+  logDataCounter = 0;
   minuteCounter = 0;
   setupSDCard ();
 }
@@ -162,6 +175,7 @@ void stateMachine_tick() {
       }
       else if (counter >= SAMPLE_INTERVAL) {
         currentState = readData_st;
+        logDataCounter++;
         counter = 0;
       }
       else {
@@ -170,7 +184,13 @@ void stateMachine_tick() {
       break;
 
     case readData_st:
-      currentState = waitInstructions_st;
+      if (logDataCounter >= 60) {
+        logDataCounter = 0;
+        currentState = transmitData_st;
+      }
+      else {
+        currentState = waitInstructions_st;
+      }
       break;
 
     case transmitData_st:
