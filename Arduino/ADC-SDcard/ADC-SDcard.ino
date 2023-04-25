@@ -1,7 +1,13 @@
-// This is the first version to try and use SPI
-// There will be SPI commands sent from another arduino
-// acting like the raspberry pi. This arduino will respond
-// and do the appropriate action.
+// This is the version that saves data to the
+// SD card that will store the data in a csv file
+/*
+ ** MOSI - pin 11
+ ** MISO - pin 12
+ ** CLK - pin 13
+ ** CS - pin 4 (for MKRZero SD: SDCARD_SS_PIN)
+ ** CO2_A_INPUT_PIN - A0
+ ** CO2_B_INPUT_PIN - A1
+*/
 
 #include <stdint.h>
 #include <SPI.h>

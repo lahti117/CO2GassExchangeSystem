@@ -6,6 +6,7 @@
 #define SAMPLE_INTERVAL 20
 #define CO2_A_INPUT_PIN A0
 #define C02_B_INPUT_PIN A1
+
 // #define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
 #define COLUMN_DATA_TITLES "CO2 Cell A, CO2 Cell B\n"
 #define DATA_FORMAT_STRING "%d,%d\n"
@@ -17,6 +18,8 @@
 #define UPDATE_RELAYS_MSG '2'
 
 #define FILE_NAME "data.csv"
+#define CHIP_SELECT_PIN 10
+#define FILE_NAME_SIZE 10
 
 #ifdef DEBUG
 void printState() {
@@ -64,6 +67,7 @@ static uint16_t CO2BValues[ARRAY_LEN];
 static uint8_t iterator;
 static uint8_t counter;
 static uint16_t minuteCounter;
+// char fileName [FILE_NAME_SIZE]; Use this file name later for dynamic naming
 
 //File dataFile;
 
@@ -105,7 +109,7 @@ void readData() {
 }
 
 void setupSDCard () {
-  if (!SD.begin(10)) {
+  if (!SD.begin(CHIP_SELECT_PIN)) {
     Serial.println("SD Card initialization failed!");
   }
   else {
