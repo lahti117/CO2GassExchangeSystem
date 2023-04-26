@@ -11,8 +11,8 @@
 #define C02_B_INPUT_PIN A1
 
 // #define DATA_FORMAT_STRING "CO2A: %d, CO2B:%d\n"
-#define COLUMN_DATA_TITLES "CO2 Cell A, CO2 Cell B\n"
-#define DATA_FORMAT_STRING "%d,%d\n"
+#define COLUMN_DATA_TITLES "CO2 Cell A, CO2 Cell B, Vcc(mV)\n"
+#define DATA_FORMAT_STRING "%d,%d,%d\n"
 #define NUM_RELAYS 8
 
 #define SEND_DATA_BUFFER_SIZE 30
@@ -75,6 +75,32 @@ void printState() {
 }
 #endif
 
+// Function that uses registers and the internal 1.1V reference
+// to read the supply voltage. Used for calculating exact value
+// read by the analog inputs. Output is in (mV)
+// There is a delay in this function so it should only be run
+// once at setup.
+uint16_t readVcc() {
+  uint16_t result;
+  // Read 1.1V reference against AVcc
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+  ADMUX = _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+#elif defined (__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+  ADMUX = _BV(MUX5) | _BV(MUX0);
+#elif defined (__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+  ADMUX = _BV(MUX3) | _BV(MUX2);
+#else
+  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+#endif
+  delay(2); // Wait for VCC to settle
+  ADCSRA |= _BV(ADSC); // Convert
+  while (bit_is_set(ADCSRA, ADSC));
+  result = ADCL;
+  result |= ADCH << 8;
+  result = (1126400L / result)+100; // Calculate Vcc (in mV); 1126400 = 1.1*1024*1000 and 100mV offset correction
+  return result;
+}
+
 // Function that computes the average if the given array
 uint16_t average(uint16_t list[], uint8_t len) {
   uint8_t i;
@@ -88,7 +114,7 @@ uint16_t average(uint16_t list[], uint8_t len) {
 // Function for sending data over the SD connection
 void sendData(uint16_t CO2, uint16_t H2O) {
   char data [SEND_DATA_BUFFER_SIZE];
-  sprintf(data, DATA_FORMAT_STRING, CO2, H2O);
+  sprintf(data, DATA_FORMAT_STRING, CO2, H2O, readVcc());
   int len = strlen(data);
   uint16_t i;
   File dataFile;
@@ -127,7 +153,7 @@ void setupSDCard () {
       Serial.println("data.csv doesn't exist.");
       Serial.println("creating data.csv");
     }
-    char titleString[30];
+    char titleString[40];
     sprintf(titleString, "%s", COLUMN_DATA_TITLES);
     uint8_t len = strlen(titleString);
     File dataFile;
